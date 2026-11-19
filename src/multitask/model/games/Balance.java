@@ -18,14 +18,14 @@ import multitask.model.Game;
 public final class Balance implements Game {
 
   /** Demi-longueur de la piste, en unités du modèle. */
-  public static final double TRACK_HALF_LENGTH = 50;
+  public static final double TRACK_HALF_LENGTH = 30;
   /** Valeur absolue maximale de l'inclinaison de la planche, en degrés. */
-  public static final double MAX_TILT_DEGREES = 35;
+  public static final double MAX_TILT_DEGREES = 45;
 
   /** Vitesse de variation de l'inclinaison, en degrés par seconde. */
   private static final double TILT_SPEED_DEG_PER_SEC = 90;
   /** Accélération gravitationnelle de base utilisée par la simulation. */
-  private static final double GRAVITY = 55;
+  private static final double GRAVITY = 45;
   /** Coefficient de réduction de la vitesse appliqué à chaque mise à jour. */
   private static final double FRICTION = 0.995;
 
@@ -45,6 +45,9 @@ public final class Balance implements Game {
     tilt = 0;
     super();
   }
+  
+  /** Marge autorisée hors de la planche pour voir la bille tomber */
+  private static final double DROP_MARGIN = 18.0;
 
   /**
    * Met à jour les commandes d'inclinaison, la dynamique de la bille et vérifie
@@ -106,9 +109,10 @@ public final class Balance implements Game {
    *         {@code false} si la bille a dépassé un bord
    */
   private boolean checkBorder() {
+	var maxAllowed = TRACK_HALF_LENGTH + DROP_MARGIN;
     var old = position;
-    position = Game.dontExceed(position, TRACK_HALF_LENGTH);
-    return old == position;
+    position = Game.dontExceed(position, maxAllowed);
+    return Math.abs(old) <= position;
   }
 
   /**

@@ -43,27 +43,30 @@ public final class BalanceView implements GameView {
     GameView.checkInput(graphics, balance, area);
 
     var centerX = area.x + area.width / 2;
-    var centerY = area.y + area.height / 2;
-    var halfPlank = area.width / 2 - 15;
+    var centerY = area.y + area.height / 2 + 5;
+    
+    var plankWidth = (int) (area.width * 0.55);
+    var plankHeight = 14;
+    var ballRadius = 16;
+    
+    var oldTransform = graphics.getTransform();
 
     var tiltRad = Math.toRadians(balance.tilt());
-    var dx = (int) (halfPlank * Math.cos(tiltRad));
-    var dy = (int) (halfPlank * Math.sin(tiltRad));
+    graphics.rotate(tiltRad, centerX, centerY);
+    
+    graphics.setColor(new Color(229, 158, 172));
+    graphics.fillRect(centerX - plankWidth / 2, centerY - plankHeight, plankWidth, plankHeight);
+    
+    var halfTrack = Balance.TRACK_HALF_LENGTH;
+    var normPos = balance.position() / halfTrack; 
+    var ballOffset = (int) (normPos * (plankWidth / 2.0 - ballRadius / 2.0));
 
-    var leftX = centerX - dx;
-    var leftY = centerY - dy;
-    var rightX = centerX + dx;
-    var rightY = centerY + dy;
-
-    graphics.setColor(new Color(180, 140, 90));
-    graphics.setStroke(new BasicStroke(6));
-    graphics.drawLine(leftX, leftY, rightX, rightY);
-
-    var t = balance.position() / Balance.TRACK_HALF_LENGTH + 1;
-    var ballX = (int) (leftX + t * dx);
-    var ballY = (int) (leftY + t * dy);
+    var ballX = centerX + ballOffset - ballRadius / 2;
+    var ballY = centerY - plankHeight / 2 - ballRadius;
 
     graphics.setColor(Color.WHITE);
-    graphics.fillOval(ballX - 7, ballY - 15, 14, 14);
+    graphics.fillOval(ballX - 3, ballY - 15, 18, 18);
+    
+    graphics.setTransform(oldTransform);
   }
 }
