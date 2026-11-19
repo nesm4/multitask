@@ -74,7 +74,7 @@ public final class Main {
    *
    * @param <G>     type concret du mini-jeu
    * @param model   modèle auquel ajouter le mini-jeu
-   * @param viewers regisstre dans lequel enregistrer sa vue
+   * @param viewers registre dans lequel enregistrer sa vue
    * @param game    instance du mini-jeu à enregistrer
    * @param time    temps, en secondes depuis le début de la partie, auquel
    *                activer le mini-jeu
