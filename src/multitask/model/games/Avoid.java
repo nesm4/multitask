@@ -38,7 +38,7 @@ public final class Avoid implements Game {
    * @param x   position horizontale du missile dans les coordonnées du modèle
    * @param row indice de la rangée occupée par le missile
    */
-  public record Missile(double x, int row) {
+  public record Missile(double x, int row, int sens) {
 
     /**
      * Crée un missile déplacé horizontalement, en conservant sa rangée.
@@ -47,7 +47,7 @@ public final class Avoid implements Game {
      * @return nouvelle valeur immuable représentant le missile déplacé
      */
     private Missile moveRight(double dx) {
-      return new Missile(x + dx, row);
+      return new Missile(x + dx, row, sens);
     }
   }
 
@@ -108,7 +108,13 @@ public final class Avoid implements Game {
       row = Game.withinBounds(row + dir, 0, ROWS - 1);
     }
   }
-
+  
+  private int RandomSens() {
+	  if(random.nextInt(2) == 1) {
+		  return 1;
+	  }
+	  return -1;
+  }
   /**
    * Diminue le compte à rebours et fait apparaître un missile sur une rangée
    * aléatoire lorsque celui-ci devient strictement négatif. L'intervalle diminue
@@ -121,7 +127,7 @@ public final class Avoid implements Game {
     var spawnInterval = Math.max(0.45, BASE_SPAWN_INTERVAL - difficulty * 0.15);
     spawnTimer -= dt;
     if (spawnTimer < 0) {
-      missiles.add(new Missile(0.0, random.nextInt(ROWS)));
+      missiles.add(new Missile(0.0, random.nextInt(ROWS), RandomSens()));
       spawnTimer = spawnInterval;
     }
   }

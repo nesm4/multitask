@@ -3,6 +3,7 @@ package multitask.view.games;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Polygon;
 import java.util.Objects;
 import java.util.function.IntUnaryOperator;
 
@@ -48,20 +49,35 @@ public final class AvoidView implements GameView {
     IntUnaryOperator rowToY = row -> area.y + (int) ((2 * Avoid.ROWS - 2 * row - 1) * scaleY);
 
     graphics.setColor(new Color(120, 120, 140));
-    graphics.fillRect(area.x + area.width - 8, area.y, 8, area.height);
+    graphics.fillRect(area.x +(area.width - 8)/2, area.y, 8, area.height);
 
     var platformCenterY = rowToY.applyAsInt(avoider.row());
     var platformHalf = (int) scaleY;
     var platformWidth = 14;
     graphics.setColor(new Color(90, 200, 220));
-    graphics.fillRect(area.x + area.width - platformWidth, platformCenterY - platformHalf, platformWidth,
+    graphics.fillRect(area.x + (area.width - platformWidth)/2, platformCenterY - platformHalf, platformWidth,
         platformHalf * 2);
 
     graphics.setColor(new Color(230, 90, 90));
     for (Avoid.Missile m : avoider.missiles()) {
-      int mx = area.x + (int) (m.x() * scaleX);
+      int mx = area.x + area.width * (1 - m.sens())/2 + (int) (m.x() * scaleX * m.sens()/2);
       int my = rowToY.applyAsInt(m.row());
-      graphics.fillOval(mx - 5, my - 3, 10, 6);
+      
+      int[] xPoints = { 
+		mx - m.sens() * 20,
+		mx,
+		mx - m.sens() * 20
+	  };
+
+	  int[] yPoints = { 
+		my - 10,
+		my,
+		my + 10
+	  };
+
+	  Polygon triangle = new Polygon(xPoints, yPoints, 3);
+	
+      graphics.fillPolygon(triangle);
     }
   }
 }
