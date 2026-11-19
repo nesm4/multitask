@@ -8,12 +8,6 @@ import multitask.model.Game;
 /**
  * Mini-jeu d'équilibre : le joueur incline une planche et doit empêcher une
  * bille de sortir de ses limites.
- *
- * <p>
- * Les flèches gauche et droite règlent l'inclinaison. La gravité fait accélérer
- * la bille dans le sens de l'inclinaison, tandis qu'un facteur de friction
- * atténue sa vitesse.
- * </p>
  */
 public final class Balance implements Game {
 
@@ -29,6 +23,11 @@ public final class Balance implements Game {
   /** Coefficient de réduction de la vitesse appliqué à chaque mise à jour. */
   private static final double FRICTION = 0.995;
 
+  /** Inclinaison initiale fixe pour forcer le joueur à réagir dès le début. */
+  private static final double INITIAL_TILT_DEGREES = 2.0;
+  /** Marge autorisée hors de la planche pour voir la bille tomber un peu. */
+  private static final double DROP_MARGIN = 18.0;
+
   /** Position longitudinale de la bille sur la piste, centrée en zéro. */
   private double position;
   /** Vitesse longitudinale de la bille. */
@@ -37,99 +36,66 @@ public final class Balance implements Game {
   private double tilt;
 
   /**
-   * Crée un jeu avec la bille au centre, immobile, et une planche horizontale.
+   * Crée un jeu avec la bille au centre, immobile, et une planche légèrement inclinée.
    */
   public Balance() {
     position = 0;
     speed = 0;
-    tilt = 0;
+    tilt = INITIAL_TILT_DEGREES;
     super();
   }
-  
-  /** Marge autorisée hors de la planche pour voir la bille tomber */
-  private static final double DROP_MARGIN = 18.0;
 
-  /**
-   * Met à jour les commandes d'inclinaison, la dynamique de la bille et vérifie
-   * les limites.
-   *
-   * @param dt         durée du pas de simulation, en secondes
-   * @param input      état des entrées clavier
-   * @param difficulty niveau de difficulté global
-   * @return {@code true} tant que la bille reste dans les limites de la piste ;
-   *         {@code false} si elle dépasse l'une de ces limites
-   * @throws IllegalArgumentException si {@code dt} ou {@code difficulty} est
-   *                                  négatif
-   * @throws NullPointerException     si {@code input} est {@code null}
-   */
   @Override
   public boolean update(double dt, Input input, double difficulty) {
     Game.checkInput(dt, input, difficulty);
 
-    readInput(dt, input);
+    readInput(dt, input, difficulty);
     positionAndSpeed(dt, difficulty);
     return checkBorder();
   }
 
   /**
-   * Modifie l'inclinaison selon les touches gauche et droite maintenues, sans
-   * dépasser les angles autorisés. En l'absence de ces touches, l'inclinaison
-   * reste inchangée.
-   *
-   * @param dt    durée du pas de simulation, en secondes
-   * @param input état des entrées clavier
+   * Modifie l'inclinaison selon les touches gauche et droite maintenues.
+   * La flèche gauche (LEFT) fait pencher à gauche (diminue tilt), 
+   * la flèche droite (RIGHT) fait pencher à droite (augmente tilt).
    */
-  private void readInput(double dt, Input input) {
+  private void readInput(double dt, Input input, double difficulty) {
     var dir = (input.isKeyDown(Key.LEFT) ? -1 : 0) + (input.isKeyDown(Key.RIGHT) ? 1 : 0);
     if (dir != 0) {
-      tilt = Game.dontExceed(tilt + dir * TILT_SPEED_DEG_PER_SEC * dt, MAX_TILT_DEGREES);
+      var currentTiltSpeed = TILT_SPEED_DEG_PER_SEC * (1 + difficulty / 5.0);
+      tilt = Game.dontExceed(tilt + dir * currentTiltSpeed * dt, MAX_TILT_DEGREES);
     }
   }
 
   /**
-   * Calcule l'accélération liée à l'inclinaison, puis intègre la vitesse et la
-   * position de la bille. La difficulté augmente l'accélération gravitationnelle
-   * appliquée.
-   *
-   * @param dt         durée du pas de simulation, en secondes
-   * @param difficulty niveau de difficulté global
+   * Calcule l'accélération gravitationnelle liée à l'inclinaison et à la difficulté.
    */
   private void positionAndSpeed(double dt, double difficulty) {
-    var acceleration = GRAVITY * Math.sin(Math.toRadians(tilt)) * (1 + difficulty / 4);
+    var acceleration = GRAVITY * Math.sin(Math.toRadians(tilt)) * (1 + difficulty / 3.0);
     speed += acceleration * dt;
     speed *= FRICTION;
     position += speed * dt;
   }
 
   /**
-   * Limite la position de la bille aux bords de la piste et détermine si elle les
-   * a franchis.
-   *
-   * @return {@code true} si la position n'a pas été corrigée par la limitation,
-   *         {@code false} si la bille a dépassé un bord
+   * Limite la position de la bille en incluant la marge de chute et détermine si elle a
+   * dépassé la limite autorisée.
    */
   private boolean checkBorder() {
-	var maxAllowed = TRACK_HALF_LENGTH + DROP_MARGIN;
+    var maxAllowed = TRACK_HALF_LENGTH + DROP_MARGIN;
     var old = position;
+    
+    // On limite la position maximale pour éviter que la bille parte à l'infini
     position = Game.dontExceed(position, maxAllowed);
-    return Math.abs(old) <= position;
+    
+    // On vérifie la valeur absolue : si le déplacement d'origine a dépassé la marge tolérée, on perd !
+    return Math.abs(old) <= maxAllowed;
   }
 
-  /**
-   * Retourne la position longitudinale courante de la bille.
-   *
-   * @return position de la bille, comprise entre les limites de la piste après
-   *         une mise à jour
-   */
   public double position() {
     return position;
   }
 
-  /**
-   * Retourne l'inclinaison courante de la planche.
-   *
-   * @return inclinaison en degrés
-   */
   public double tilt() {
     return tilt;
   }
