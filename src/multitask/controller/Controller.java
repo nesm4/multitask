@@ -114,7 +114,7 @@ public final class Controller {
 				PauseView.render(null);
 			}
 			else {
-				if (input.isKeyJustPressed(Key.M)) {
+				if (input.isKeyJustPressed(Key.R)) {
 					return true;
 				}
 				input.nextFrame();

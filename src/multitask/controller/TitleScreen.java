@@ -16,9 +16,7 @@ import multitask.model.Game;
 import multitask.model.Model;
 import multitask.model.games.Avoid;
 import multitask.model.games.Balance;
-import multitask.view.Fin;
 import multitask.view.GeneralView;
-import multitask.view.View;
 import multitask.view.ViewTitle;
 import multitask.view.Viewers;
 import multitask.view.games.AvoidView;
@@ -87,7 +85,6 @@ public class TitleScreen {
 
 		while (true) {
 			var now = System.nanoTime();
-			var dt = Math.min((now - lastTime) / 1_000_000_000.0, MAX_DT);
 			lastTime = now;
 
 			pollInput();
