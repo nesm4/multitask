@@ -1,5 +1,8 @@
 package multitask.controller;
 
+import java.awt.Color;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,6 +19,7 @@ import multitask.model.games.Balance;
 import multitask.view.Fin;
 import multitask.view.GeneralView;
 import multitask.view.View;
+import multitask.view.ViewTitle;
 import multitask.view.Viewers;
 import multitask.view.games.AvoidView;
 import multitask.view.games.BalanceView;
@@ -31,7 +35,6 @@ public class TitleScreen {
 	 */
 	private static final double MAX_DT = 0.05;
 	
-	private final View EndView;
 	/** État des touches maintenues et nouvellement pressées. */
 	private final Input input;
 	/** Contexte graphique utilisé pour récupérer les événements clavier. */
@@ -39,7 +42,11 @@ public class TitleScreen {
 	/** Indique si la boucle principale doit continuer. */
 	private boolean running;
 	
-	private boolean Again;
+	private List<Button> Buttons;
+	
+	private boolean Play;
+	private int width;
+	private int height;
 	/**
    * Crée un contrôleur associé au modèle, à la vue et au contexte graphique
    * fournis.
@@ -50,10 +57,13 @@ public class TitleScreen {
    */
   public TitleScreen(ApplicationContext context) {
     this.context = context;
-    this.EndView = new Fin(context);
+    this.Buttons = new ArrayList<>();
+    Play = true;
     input = new Input();
     running = false;
-    super();
+    var screen = context.getScreenInfo();
+    width = screen.width();
+    height = screen.height();
   }
 
 	/**
@@ -69,10 +79,10 @@ public class TitleScreen {
 	 * </p>
 	 */
 	public void run() {
-		running = true;
-
-		Again = true;
-
+		
+		Buttons.add(new Button("Jouer", Color.GREEN, Outils.CenterRect(width/2, height/2 - 200, 400, 300), _ -> RunGame()));
+		Buttons.add(new Button("Quitter", Color.RED, Outils.CenterRect(width/2, height/2 + 200, 400, 300), _ -> Play = false));
+		var view = new ViewTitle(context, Buttons);
 		var lastTime = System.nanoTime();
 
 		while (true) {
@@ -81,34 +91,30 @@ public class TitleScreen {
 			lastTime = now;
 
 			pollInput();
-			if (input.isKeyJustPressed(Key.ESCAPE)) {
+			if (input.isKeyJustPressed(Key.ESCAPE) || !Play) {
 				break;
 			}
-			if (input.isPointerJustPressed() && input.PointerLocation().x() > 700) {
-
-				try {
-					while (Again) {
-						var model = new Model();
-						var viewers = new Viewers();
-						addGame(model, viewers, new Balance(), 0, BalanceView::new);
-						addGame(model, viewers, new Avoid(), 5, AvoidView::new);
-
-						var view = new GeneralView(context, viewers);
-						var controller = new Controller(model, view, context);
-
-						Again = controller.run();
-					}
-				} finally {
-					context.dispose();
-				}
-			}
-
+			checkButtonPressed(); 
+			
+			view.render(null);
 			input.nextFrame();
 			sleepUntilNextFrame(now);
 		}
 	}
 	
-	
+	private void checkButtonPressed() {
+		if(input.isPointerJustPressed()) {
+			var location = input.PointerLocation();
+			int x = location.x();
+			int y = location.y();
+			for(var button : Buttons) {
+				if(button.rect().contains(x, y)) {
+					button.fonction().accept(null);
+				}
+			}
+		}
+		
+	}
 	/**
    * Enregistre un mini-jeu dans le modèle et associe à cette instance sa vue
    * graphique.
@@ -122,6 +128,26 @@ public class TitleScreen {
    * @param factory fonction construisant une vue à partir de l'instance du
    *                mini-jeu
    */
+	
+	private void RunGame() {
+		try {
+			while (Play) {
+				var controller = CreateController();
+				Play = controller.run();
+			}
+		} finally {
+		}
+	}
+	private Controller CreateController() {
+		var model = new Model();
+		var viewers = new Viewers();
+		addGame(model, viewers, new Balance(), 0, BalanceView::new);
+		addGame(model, viewers, new Avoid(), 5, AvoidView::new);
+
+		var view = new GeneralView(context, viewers);
+		return new Controller(model, view, context);
+	}
+	
   private static <G extends Game> void addGame(Model model, Viewers viewers, G game, int time,
       Function<G, GameView> factory) {
     model.addGame(game, time);

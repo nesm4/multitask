@@ -40,7 +40,6 @@ public class ViewTitle implements View {
 	    var screen = context.getScreenInfo();
 	    width = screen.width();
 	    height = screen.height();
-	    super();
 	  }
 
 	/**
@@ -51,8 +50,7 @@ public class ViewTitle implements View {
 	 * @throws NullPointerException si {@code model} est {@code null}
 	 */
 	public void render(Model model) {
-		Objects.requireNonNull(model);
-		context.renderFrame(graphics -> draw(graphics, model));
+		context.renderFrame(graphics -> draw(graphics));
 	}
 
 	/**
@@ -63,14 +61,16 @@ public class ViewTitle implements View {
 	 * @param graphics surface graphique de l'image en cours
 	 * @param model    modèle contenant l'état à dessiner
 	 */
-	private void draw(Graphics2D graphics, Model model) {
+	private void draw(Graphics2D graphics) {
 		graphics.setColor(BACKGROUND);
 		graphics.fillRect(0, 0, width, height);
-
-		graphics.setColor(Color.RED);
-		centerText(graphics, "Votre temps à été de :" + model.time() + " s",
-				new Rectangle(width / 2, height / 2 - 20, 0, 0));
-		centerText(graphics, "Presser M pour rejouer.", new Rectangle(width / 2, height / 2, 0, 0));
+		
+		for(var button : Buttons) {
+			graphics.setColor(button.color());
+			graphics.fill(button.rect());
+			graphics.setColor(Color.BLACK);
+			centerText(graphics, button.title(), button.rect());
+		}
 	}
 
 	/**

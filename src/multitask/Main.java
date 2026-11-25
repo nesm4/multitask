@@ -1,20 +1,9 @@
 package multitask;
 
-import java.util.function.Function;
-
 import com.github.forax.zen.Application;
 import com.github.forax.zen.ApplicationContext;
-import multitask.controller.Controller;
 import multitask.controller.TitleScreen;
-import multitask.model.Game;
-import multitask.model.Model;
-import multitask.model.games.Balance;
-import multitask.model.games.Avoid;
 import multitask.view.GeneralView;
-import multitask.view.Viewers;
-import multitask.view.games.AvoidView;
-import multitask.view.games.BalanceView;
-import multitask.view.games.GameView;
 
 /**
  * Point d'entrée de l'application de mini-jeux multitâches.
