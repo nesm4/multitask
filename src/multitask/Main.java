@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.github.forax.zen.Application;
 import com.github.forax.zen.ApplicationContext;
 import multitask.controller.Controller;
+import multitask.controller.TitleScreen;
 import multitask.model.Game;
 import multitask.model.Model;
 import multitask.model.games.Balance;
@@ -52,38 +53,14 @@ public final class Main {
    *
    * @param context contexte graphique fourni par la bibliothèque Zen
    */
-  private static void game(ApplicationContext context) {
-    var model = new Model();
-    var viewers = new Viewers();
-    addGame(model, viewers, new Balance(), 0, BalanceView::new);
-    addGame(model, viewers, new Avoid(), 5, AvoidView::new);
+	private static void game(ApplicationContext context) {
+		TitleScreen title = new TitleScreen(context);
+		try {
+			title.run();
+		} finally {
+			context.dispose();
+		}
+		
+	}
 
-    var view = new GeneralView(context, viewers);
-    var controller = new Controller(model, view, context);
-
-    try {
-      controller.run();
-    } finally {
-      context.dispose();
-    }
-  }
-
-  /**
-   * Enregistre un mini-jeu dans le modèle et associe à cette instance sa vue
-   * graphique.
-   *
-   * @param <G>     type concret du mini-jeu
-   * @param model   modèle auquel ajouter le mini-jeu
-   * @param viewers registre dans lequel enregistrer sa vue
-   * @param game    instance du mini-jeu à enregistrer
-   * @param time    temps, en secondes depuis le début de la partie, auquel
-   *                activer le mini-jeu
-   * @param factory fonction construisant une vue à partir de l'instance du
-   *                mini-jeu
-   */
-  private static <G extends Game> void addGame(Model model, Viewers viewers, G game, int time,
-      Function<G, GameView> factory) {
-    model.addGame(game, time);
-    viewers.addGame(game, factory.apply(game));
-  }
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.github.forax.zen.KeyboardEvent.Key;
+import com.github.forax.zen.PointerEvent.Location;
 
 /**
  * Mémorise l'état des touches du clavier entre les images.
@@ -26,11 +27,19 @@ public final class Input {
    * {@link #nextFrame()}.
    */
   private final Set<Key> keysPressed;
-
+  
+  private boolean PointerDown;
+  private boolean PointerJustPressed;
+  
+  private Location PointerXY;
+  
   /** Crée un état d'entrée sans aucune touche enfoncée. */
   public Input() {
     keysDown = new HashSet<Key>();
     keysPressed = new HashSet<Key>();
+    PointerDown = false;
+    PointerJustPressed = false;
+    PointerXY = new Location(0, 0);
     super();
   }
 
@@ -52,7 +61,24 @@ public final class Input {
       keysPressed.add(key);
     }
   }
-
+  
+  public void pointerDown() {
+  	PointerJustPressed = true;
+  	PointerDown = true;
+  }
+  
+  public void pointerUp() {
+  	PointerDown = false;
+  }
+  
+  public void UpdateLocation(Location PointerLocation) {
+  	PointerXY = PointerLocation;
+  }
+  
+  public Location PointerLocation() {
+  	return PointerXY;
+  }
+  
   /**
    * Signale le relâchement d'une touche. Ne fait rien si la touche n'était pas
    * enregistrée comme enfoncée.
@@ -77,6 +103,10 @@ public final class Input {
     Objects.requireNonNull(key);
     return keysDown.contains(key);
   }
+  
+  public boolean isPointerDown() {
+    return PointerDown;
+  }
 
   /**
    * Indique si l'appui d'une touche a commencé depuis la dernière avancée
@@ -91,12 +121,17 @@ public final class Input {
     Objects.requireNonNull(key);
     return keysPressed.contains(key);
   }
+  
+  public boolean isPointerJustPressed() {
+    return PointerJustPressed;
+  }
 
   /**
    * Termine l'image courante en effaçant les appuis ponctuels. Les touches
    * toujours maintenues restent enregistrées dans {@code keysDown}.
    */
   public void nextFrame() {
+  	PointerJustPressed = false;
     keysPressed.clear();
   }
 }

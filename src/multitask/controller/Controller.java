@@ -3,9 +3,12 @@ package multitask.controller;
 import com.github.forax.zen.ApplicationContext;
 import com.github.forax.zen.KeyboardEvent;
 import com.github.forax.zen.KeyboardEvent.Action;
+import com.github.forax.zen.KeyboardEvent.Key;
+import com.github.forax.zen.PointerEvent;
 
 import multitask.model.Model;
 import multitask.view.View;
+import multitask.view.Fin;
 
 /**
  * Contrôleur principal : collecte les événements clavier, met à jour le modèle
@@ -25,6 +28,7 @@ public final class Controller {
   private final Model model;
   /** Vue chargée d'afficher l'état courant du modèle. */
   private final View view;
+  private final View EndView;
   /** État des touches maintenues et nouvellement pressées. */
   private final Input input;
   /** Contexte graphique utilisé pour récupérer les événements clavier. */
@@ -44,6 +48,7 @@ public final class Controller {
     this.model = model;
     this.view = view;
     this.context = context;
+    this.EndView = new Fin(context);
     input = new Input();
     running = false;
     super();
@@ -61,22 +66,33 @@ public final class Controller {
    * {@link #TARGET_DT}.
    * </p>
    */
-  public void run() {
-    running = true;
-    var lastTime = System.nanoTime();
-    while (running) {
-      var now = System.nanoTime();
-      var dt = Math.min((now - lastTime) / 1_000_000_000.0, MAX_DT);
-      lastTime = now;
+	public boolean run() {
+		running = true;
+		var lastTime = System.nanoTime();
+		while (true) {
+			var now = System.nanoTime();
+			var dt = Math.min((now - lastTime) / 1_000_000_000.0, MAX_DT);
+			lastTime = now;
 
-      pollInput();
-      running = model.update(dt, input);
-      input.nextFrame();
-      view.render(model);
+			pollInput();
+			if (input.isKeyJustPressed(Key.ESCAPE)) {
+				return false;
+			}
+			if (running) {
+				running = model.update(dt, input);
+				input.nextFrame();
+				view.render(model);
+			} else {
+				if (input.isKeyJustPressed(Key.M)) {
+					return true;
+				}
+				input.nextFrame();
+				EndView.render(model);
+			}
 
-      sleepUntilNextFrame(now);
-    }
-  }
+			sleepUntilNextFrame(now);
+		}
+	}
 
   /**
    * Vide la file des événements disponibles et transmet les événements clavier à
@@ -89,6 +105,10 @@ public final class Controller {
       case null -> false;
       case KeyboardEvent ke -> {
         handleKey(ke);
+        yield true;
+      }
+      case PointerEvent p -> {
+        handlePointer(p);
         yield true;
       }
       default -> true;
@@ -108,7 +128,22 @@ public final class Controller {
     case Action.KEY_RELEASED -> input.keyUp(gameKey);
     }
   }
-
+  
+  private void handlePointer(PointerEvent event) {
+    switch (event.action()) {
+    case POINTER_DOWN-> {
+    	input.pointerDown();
+    	input.UpdateLocation(event.location());
+    }
+    case POINTER_UP -> {
+    	input.pointerUp();
+    	input.UpdateLocation(event.location());
+    }
+		case POINTER_MOVE -> input.UpdateLocation(event.location());
+    }
+    
+  }
+  
   /**
    * Attend la fin de l'intervalle cible d'une image si le traitement courant
    * s'est terminé assez tôt.
