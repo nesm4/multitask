@@ -7,64 +7,93 @@ import java.util.Objects;
 
 import multitask.model.games.Balance;
 
+/**
+ * Vue graphique du mini-jeu {@link Balance} : dessine la planche inclinée et la
+ * bille, y compris lorsque celle-ci tombe.
+ */
 public final class BalanceView implements GameView {
 
+  /** Hauteur de la planche, en pixels. */
+  private static final int PLANK_HEIGHT = 14;
+  /** Diamètre de la bille, en pixels. */
+  private static final int BALL_DIAMETER = 24;
+
+  /** État de jeu lu pour produire le dessin. */
   private final Balance balance;
 
+  /**
+   * Crée une vue associée au mini-jeu fourni.
+   *
+   * @param balance mini-jeu dont l'état doit être représenté
+   * @throws NullPointerException si {@code balance} est {@code null}
+   */
   public BalanceView(Balance balance) {
     Objects.requireNonNull(balance);
     this.balance = balance;
     super();
   }
 
+  /**
+   * Dessine la planche à son angle courant et positionne la bille
+   * proportionnellement à sa position sur la piste.
+   *
+   * @param graphics contexte graphique à utiliser
+   * @param area     zone disponible pour le dessin
+   * @throws NullPointerException si {@code graphics}, le jeu associé ou
+   *                              {@code area} est nul
+   */
   @Override
   public void render(Graphics2D graphics, Rectangle area) {
     GameView.checkInput(graphics, balance, area);
 
     var centerX = area.x + area.width / 2;
     var centerY = area.y + area.height / 2 + 30;
-
     var plankWidth = (int) (area.width * 0.55);
-    var plankHeight = 14;
-    var ballDiameter = 24;
 
+    drawPlank(graphics, centerX, centerY, plankWidth);
+    drawBall(graphics, centerX, centerY, plankWidth);
+  }
+
+  /**
+   * Dessine la planche, tournée autour de son centre selon l'inclinaison. Le
+   * repère d'origine est rétabli à la fin, pour que la bille ne soit pas
+   * dessinée dans le repère incliné.
+   *
+   * @param graphics   contexte graphique à utiliser
+   * @param centerX    abscisse du centre de la planche
+   * @param centerY    ordonnée du centre de la planche
+   * @param plankWidth longueur de la planche, en pixels
+   */
+  private void drawPlank(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
     var oldTransform = graphics.getTransform();
+    graphics.rotate(Math.toRadians(balance.tilt()), centerX, centerY);
+    graphics.setColor(new Color(229, 158, 172));
+    graphics.fillRect(centerX - plankWidth / 2, centerY - PLANK_HEIGHT / 2, plankWidth, PLANK_HEIGHT);
+    graphics.setTransform(oldTransform);
+  }
+
+  /**
+   * Dessine la bille. Sa position le long de la planche est projetée sur
+   * l'écran grâce à l'inclinaison, puis sa hauteur de chute est ajoutée
+   * verticalement à l'écran, quelle que soit l'inclinaison de la planche.
+   *
+   * @param graphics   contexte graphique à utiliser
+   * @param centerX    abscisse du centre de la planche
+   * @param centerY    ordonnée du centre de la planche
+   * @param plankWidth longueur de la planche, en pixels
+   */
+  private void drawBall(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
+    var pixelsPerUnit = (plankWidth / 2.0) / Balance.TRACK_HALF_LENGTH;
+    var along = balance.position() * pixelsPerUnit;
+    var above = PLANK_HEIGHT / 2.0 + BALL_DIAMETER / 2.0;
     var tiltRad = Math.toRadians(balance.tilt());
 
-    graphics.rotate(tiltRad, centerX, centerY);
-    graphics.setColor(new Color(229, 158, 172));
-    graphics.fillRect(centerX - plankWidth / 2, centerY - plankHeight / 2, plankWidth, plankHeight);
+    var x = centerX + along * Math.cos(tiltRad) + above * Math.sin(tiltRad);
+    var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad)
+        + balance.drop() * pixelsPerUnit;
 
-    var halfTrack = Balance.TRACK_HALF_LENGTH;
-    var currentPos = balance.position();
-    var normPos = currentPos / halfTrack;
-    var ballOffset = (int) (normPos * (plankWidth / 2.0 - ballDiameter / 2.0));
-
-    double localX = centerX + ballOffset - ballDiameter / 2.0;
-    double localY = centerY - (plankHeight / 2.0) - ballDiameter;
-
-    if (Math.abs(currentPos) > halfTrack) {
-      graphics.setTransform(oldTransform);
-
-      double relX = localX + ballDiameter / 2.0 - centerX;
-      double relY = localY + ballDiameter / 2.0 - centerY;
-
-      double worldX = centerX + relX * Math.cos(tiltRad) - relY * Math.sin(tiltRad);
-      double worldY = centerY + relX * Math.sin(tiltRad) + relY * Math.cos(tiltRad);
-
-      double overflow = Math.abs(currentPos) - halfTrack;
-      // Réduction de l'accélération de chute (0.3 au lieu de 1.2 ou 1.5)
-      double fallGravity = 0.3 * overflow * overflow;
-
-      var finalBallX = (int) (worldX - ballDiameter / 2.0);
-      var finalBallY = (int) (worldY - ballDiameter / 2.0 + fallGravity);
-
-      graphics.setColor(Color.WHITE);
-      graphics.fillOval(finalBallX, finalBallY, ballDiameter, ballDiameter);
-    } else {
-      graphics.setColor(Color.WHITE);
-      graphics.fillOval((int) localX, (int) localY, ballDiameter, ballDiameter);
-      graphics.setTransform(oldTransform);
-    }
+    graphics.setColor(Color.WHITE);
+    graphics.fillOval((int) (x - BALL_DIAMETER / 2.0), (int) (y - BALL_DIAMETER / 2.0), BALL_DIAMETER,
+        BALL_DIAMETER);
   }
 }
