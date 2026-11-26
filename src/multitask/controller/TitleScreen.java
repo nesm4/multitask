@@ -17,12 +17,14 @@ import multitask.model.Model;
 import multitask.model.games.Avoid;
 import multitask.model.games.Balance;
 import multitask.model.games.Circle;
+import multitask.model.games.Touch;
 import multitask.view.GeneralView;
 import multitask.view.ViewTitle;
 import multitask.view.Viewers;
 import multitask.view.games.AvoidView;
 import multitask.view.games.BalanceView;
 import multitask.view.games.CircleView;
+import multitask.view.games.TouchView;
 import multitask.view.games.GameView;
 
 public class TitleScreen {
@@ -143,6 +145,7 @@ public class TitleScreen {
 		addGame(model, viewers, new Balance(), 10, BalanceView::new);
 		addGame(model, viewers, new Avoid(), 20, AvoidView::new);
 		addGame(model, viewers, new Circle(), 0, CircleView::new);
+		addGame(model, viewers, new Touch(), 0, TouchView::new);
 
 		var view = new GeneralView(context, viewers);
 		return new Controller(model, view, context);

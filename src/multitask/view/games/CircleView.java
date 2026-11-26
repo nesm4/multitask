@@ -71,7 +71,6 @@ public final class CircleView implements GameView {
 			var coteTriangle = 10.0;
 			var baseHalf = coteTriangle/2;
 			var hauteur = Math.sqrt(coteTriangle * coteTriangle - baseHalf * baseHalf);
-			var ecart = Math.PI / 4.0;
 			
 			int mx1 = (int) (centerX + avancement * TravelDistance * Math.cos(angle));
 			int my1 = (int) (centerY + avancement * TravelDistance * Math.sin(angle));
