@@ -48,9 +48,9 @@ public final class TouchView implements GameView {
 		var PlayerY = area.y + area.height * toucher.PlayerY()/toucher.height() - PlayerHeight/2;
 		
 		graphics.setColor(Color.GREEN);
-		graphics.fillOval(PlayerX, PlayerY, PlayerWidth, PlayerHeight);
+		graphics.fillOval((int)PlayerX, (int)PlayerY, PlayerWidth, PlayerHeight);
 	
-		graphics.setStroke(new BasicStroke(3));
+		graphics.setStroke(new BasicStroke(5));
 		
 		graphics.setColor(new Color(230, 90, 90));
 		for (Touch.Zone m : toucher.zones()) {
@@ -61,8 +61,8 @@ public final class TouchView implements GameView {
 			var ZoneY = area.y + area.height * (int) m.cercle().y()/toucher.height() - ZoneHeight/2;
 			
 			graphics.setColor(Color.ORANGE);
-			graphics.drawString("" + (int)m.time(),ZoneX + ZoneWidth/2, ZoneY + ZoneHeight/2);
-			graphics.fillOval(ZoneX, ZoneY, ZoneWidth, ZoneHeight);
+			graphics.drawString("" + (int)m.time(),ZoneX + 13 * ZoneWidth/30, ZoneY + 3 * ZoneHeight/5);
+			graphics.drawOval(ZoneX, ZoneY, ZoneWidth, ZoneHeight);
 			
 		}
 	}

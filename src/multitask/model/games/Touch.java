@@ -31,8 +31,10 @@ public final class Touch implements Game {
   
   private static final double TEMPS_ZONE = 10.0;
   
-  private static final int WIDTH = 150;
+  private static final int WIDTH = 200;
   private static final int HEIGHT = 100;
+  private static final double SPEEDX = WIDTH/100.0;
+  private static final double SPEEDY = HEIGHT/100.0;
   private static final int RAYON_ZONE = 5;
   private static final int RAYON_PLAYER = 3;
   
@@ -65,13 +67,13 @@ public final class Touch implements Game {
      * @return nouvelle valeur immuable représentant le missile déplacé
      */
     private Zone update(double dt) {
-      return new Zone(cercle, time + dt);
+      return new Zone(cercle, time - dt);
     }
   }
 
   /** Rangée actuellement occupée par le joueur. */
-  private int x;
-  private int y;
+  private double x;
+  private double y;
   /** Missiles présents dans l'aire de jeu. */
   private final List<Zone> zones;
   /** Temps restant avant la prochaine apparition d'un missile, en secondes. */
@@ -123,14 +125,14 @@ public final class Touch implements Game {
    * @param input état des entrées clavier
    */
   private void readInput(Input input) {
-    var dirX = (input.isKeyDown(Key.Q) ? -1 : 0) + (input.isKeyDown(Key.D) ? 1 : 0);
-    var dirY = (input.isKeyDown(Key.Z) ? -1 : 0) + (input.isKeyDown(Key.S) ? 1 : 0);
+    var dirX = (input.isKeyDown(Key.Q) ? -SPEEDX : 0) + (input.isKeyDown(Key.D) ? SPEEDX : 0);
+    var dirY = (input.isKeyDown(Key.Z) ? -SPEEDY : 0) + (input.isKeyDown(Key.S) ? SPEEDY : 0);
     if(dirX != 0) {
-    	if(x + dirX > WIDTH) {
-    		x = WIDTH;
+    	if(x + dirX > WIDTH - RAYON_PLAYER/2) {
+    		x = WIDTH - RAYON_PLAYER/2;
     	}
-    	if(x + dirX < 0) {
-    		x = 0;
+    	if(x + dirX < RAYON_PLAYER/2) {
+    		x = RAYON_PLAYER/2;
     	}
     	x += dirX;
     }
@@ -145,11 +147,11 @@ public final class Touch implements Game {
     }
   }
   
-  public int PlayerX() {
+  public double PlayerX() {
   	return x;
   }
   
-  public int PlayerY() {
+  public double PlayerY() {
   	return y;
   }
   
@@ -183,7 +185,7 @@ public final class Touch implements Game {
     Random random = new Random();
     if (spawnTimer < 0) {
       zones.add(new Zone(
-      		new Cercle(random.nextInt(WIDTH), random.nextInt(HEIGHT), RAYON_ZONE/2), 
+      		new Cercle(random.nextInt(WIDTH), random.nextInt(HEIGHT), RAYON_ZONE), 
       		TEMPS_ZONE));
       spawnTimer = spawnInterval;
     }
@@ -211,7 +213,7 @@ public final class Touch implements Game {
     if (zones.stream().anyMatch(m -> m.time <= 0)) {
       return false;
     }
-    Cercle CerclePlayer = new Cercle(x, y, RAYON_PLAYER);
+    Cercle CerclePlayer = new Cercle((int) x, (int) y, RAYON_PLAYER);
     zones.removeIf(z -> z.cercle().Intersects(CerclePlayer));
     return true;
   }
