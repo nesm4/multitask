@@ -72,7 +72,7 @@ public final class Fin implements View {
     
     graphics.setColor(Color.RED);
     centerText(graphics, "Votre temps à été de :" + model.time() + " s", new Rectangle(width/2, height/2 - 20, 0, 0));
-    centerText(graphics, "Presser M pour rejouer.", new Rectangle(width/2, height/2, 0, 0));
+    centerText(graphics, "Presser R pour rejouer.", new Rectangle(width/2, height/2, 0, 0));
   }
 
   /**
