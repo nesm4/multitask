@@ -20,7 +20,11 @@ public final class BalanceView implements GameView {
 
   /** État de jeu lu pour produire le dessin. */
   private final Balance balance;
-
+  
+  private final Color BACKGROUND_COLOR = new Color(254, 188, 188);
+  private final Color BALL_COLOR = new Color(174, 2, 2);
+  private final Color PLANK_COLOR = new Color(0, 0, 0);
+  
   /**
    * Crée une vue associée au mini-jeu fourni.
    *
@@ -32,7 +36,11 @@ public final class BalanceView implements GameView {
     this.balance = balance;
     super();
   }
-
+  
+  public Color BackgroundColor() {
+  	return BACKGROUND_COLOR;
+  }
+  
   /**
    * Dessine la planche à son angle courant et positionne la bille
    * proportionnellement à sa position sur la piste.
@@ -67,7 +75,7 @@ public final class BalanceView implements GameView {
   private void drawPlank(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
     var oldTransform = graphics.getTransform();
     graphics.rotate(Math.toRadians(balance.tilt()), centerX, centerY);
-    graphics.setColor(new Color(229, 158, 172));
+    graphics.setColor(PLANK_COLOR);
     graphics.fillRect(centerX - plankWidth / 2, centerY - PLANK_HEIGHT / 2, plankWidth, PLANK_HEIGHT);
     graphics.setTransform(oldTransform);
   }
@@ -92,7 +100,7 @@ public final class BalanceView implements GameView {
     var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad)
         + balance.drop() * pixelsPerUnit;
 
-    graphics.setColor(Color.WHITE);
+    graphics.setColor(BALL_COLOR);
     graphics.fillOval((int) (x - BALL_DIAMETER / 2.0), (int) (y - BALL_DIAMETER / 2.0), BALL_DIAMETER,
         BALL_DIAMETER);
   }

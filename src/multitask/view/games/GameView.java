@@ -1,5 +1,6 @@
 package multitask.view.games;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Objects;
@@ -19,7 +20,8 @@ public interface GameView {
    * @param area     zone disponible pour le rendu, en pixels
    */
   void render(Graphics2D graphics, Rectangle area);
-
+  
+  Color BackgroundColor();
   /**
    * Vérifie les arguments communs attendus par les vues de mini-jeux.
    *

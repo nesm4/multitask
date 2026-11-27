@@ -44,7 +44,7 @@ public class TitleScreen {
 	/** Indique si la boucle principale doit continuer. */
 	private boolean running;
 	
-	private List<Button> Buttons;
+	private List<Button> buttons;
 	
 	private boolean Play;
 	private int width;
@@ -59,7 +59,7 @@ public class TitleScreen {
    */
   public TitleScreen(ApplicationContext context) {
     this.context = context;
-    this.Buttons = new ArrayList<>();
+    this.buttons = new ArrayList<>();
     Play = true;
     input = new Input();
     running = false;
@@ -82,9 +82,9 @@ public class TitleScreen {
 	 */
 	public void run() {
 		
-		Buttons.add(new Button("Jouer", Color.GREEN, Outils.CenterRect(width/2, height/2 - 200, 400, 300), _ -> RunGame()));
-		Buttons.add(new Button("Quitter", Color.RED, Outils.CenterRect(width/2, height/2 + 200, 400, 300), _ -> Play = false));
-		var view = new ViewTitle(context, Buttons);
+		buttons.add(new Button("Jouer", Color.GREEN, Outils.CenterRect(width/2, height/2 - 200, 400, 300), _ -> RunGame()));
+		buttons.add(new Button("Quitter", Color.RED, Outils.CenterRect(width/2, height/2 + 200, 400, 300), _ -> Play = false));
+		var view = new ViewTitle(context, buttons);
 		var lastTime = System.nanoTime();
 
 		while (true) {
@@ -104,18 +104,18 @@ public class TitleScreen {
 	}
 	
 	private void checkButtonPressed() {
-		if(input.isPointerJustPressed()) {
+		if (input.isPointerJustPressed()) {
 			var location = input.PointerLocation();
 			int x = location.x();
 			int y = location.y();
-			for(var button : Buttons) {
-				if(button.rect().contains(x, y)) {
+			for (var button : buttons) {
+				if (button.rect().contains(x, y)) {
 					button.fonction().accept(null);
 				}
 			}
 		}
-		
 	}
+	
 	/**
    * Enregistre un mini-jeu dans le modèle et associe à cette instance sa vue
    * graphique.
@@ -143,8 +143,8 @@ public class TitleScreen {
 		var model = new Model();
 		var viewers = new Viewers();
 		addGame(model, viewers, new Balance(), 10, BalanceView::new);
-		addGame(model, viewers, new Avoid(), 20, AvoidView::new);
-		addGame(model, viewers, new Circle(), 0, CircleView::new);
+		addGame(model, viewers, new Avoid(), 10, AvoidView::new);
+		addGame(model, viewers, new Circle(), 10, CircleView::new);
 		addGame(model, viewers, new Touch(), 0, TouchView::new);
 
 		var view = new GeneralView(context, viewers);

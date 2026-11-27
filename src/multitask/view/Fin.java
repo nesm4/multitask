@@ -19,7 +19,7 @@ import java.util.Objects;
 public final class Fin implements View {
 
   /** Couleur de fond de la fenêtre. */
-  public static final Color BACKGROUND = new Color(24, 26, 32);
+	public static final Color BACKGROUND = new Color(245, 238, 223);
 
   /**
    * Contexte graphique qui fournit la taille d'écran et réalise le rendu des
@@ -71,8 +71,8 @@ public final class Fin implements View {
     graphics.fillRect(0, 0, width, height);
     
     graphics.setColor(Color.RED);
-    centerText(graphics, "Votre temps à été de :" + model.time() + " s", new Rectangle(width/2, height/2 - 20, 0, 0));
-    centerText(graphics, "Presser R pour rejouer.", new Rectangle(width/2, height/2, 0, 0));
+    centerText(graphics, "Votre temps à été de " + model.time() + " s", new Rectangle(width/2, height/2 - 50, 0, 0), 40);
+    centerText(graphics, "Presser R pour rejouer.", new Rectangle(width/2, height/2, 0, 0), 40);
   }
 
   /**
@@ -83,7 +83,8 @@ public final class Fin implements View {
    * @param text     texte à afficher
    * @param bounds   rectangle dans lequel centrer le texte
    */
-  private static void centerText(Graphics2D graphics, String text, Rectangle bounds) {
+  private static void centerText(Graphics2D graphics, String text, Rectangle bounds, int size) {
+  	graphics.setFont(new Font("Dialog", Font.PLAIN, size));
     var fm = graphics.getFontMetrics();
     var x = bounds.x + (bounds.width - fm.stringWidth(text)) / 2;
     var y = bounds.y + bounds.height / 2;

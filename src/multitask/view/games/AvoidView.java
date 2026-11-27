@@ -17,7 +17,11 @@ public final class AvoidView implements GameView {
 
   /** État du mini-jeu d'esquive lu pour produire le dessin. */
   private final Avoid avoider;
-
+  
+  private final Color BACKGROUND_COLOR = new Color(208, 213, 254);
+  private final Color CURRENT_ROW_COLOR = new Color(4, 63, 159);
+  private final Color ROW_COLOR = new Color(20, 20, 20);
+  private final Color MISSILES_COLOR = new Color(0, 0, 0);
   /**
    * Crée une vue associée au mini-jeu fourni.
    *
@@ -29,7 +33,11 @@ public final class AvoidView implements GameView {
     this.avoider = avoider;
     super();
   }
-
+  
+  public Color BackgroundColor() {
+  	return BACKGROUND_COLOR;
+  }
+  
   /**
    * Dessine le bord droit de l'aire de jeu, la position du joueur et tous les
    * missiles présents. Les coordonnées du modèle sont mises à l'échelle pour
@@ -48,17 +56,17 @@ public final class AvoidView implements GameView {
     var scaleY = area.height / (2 * Avoid.ROWS);
     IntUnaryOperator rowToY = row -> area.y + (int) ((2 * Avoid.ROWS - 2 * row - 1) * scaleY);
 
-    graphics.setColor(new Color(120, 120, 140));
+    graphics.setColor(ROW_COLOR);
     graphics.fillRect(area.x +(area.width - 8)/2, area.y, 8, area.height);
 
     var platformCenterY = rowToY.applyAsInt(avoider.row());
     var platformHalf = (int) scaleY;
     var platformWidth = 14;
-    graphics.setColor(new Color(90, 200, 220));
+    graphics.setColor(CURRENT_ROW_COLOR);
     graphics.fillRect(area.x + (area.width - platformWidth)/2, platformCenterY - platformHalf, platformWidth,
         platformHalf * 2);
 
-    graphics.setColor(new Color(230, 90, 90));
+    graphics.setColor(MISSILES_COLOR);
     for (Avoid.Missile m : avoider.missiles()) {
       int mx = area.x + area.width * (1 - m.sens())/2 + (int) (m.x() * scaleX * m.sens()/2);
       int my = rowToY.applyAsInt(m.row());

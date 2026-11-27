@@ -148,17 +148,16 @@ public final class Controller {
   }
 	
 	private void checkButtonPressed() {
-		if(input.isPointerJustPressed()) {
+		if (input.isPointerJustPressed()) {
 			var location = input.PointerLocation();
 			int x = location.x();
 			int y = location.y();
-			for(var button : Buttons) {
-				if(button.rect().contains(x, y)) {
+			for (var button : Buttons) {
+				if (button.rect().contains(x, y)) {
 					button.fonction().accept(null);
 				}
 			}
 		}
-		
 	}
 	
   /**

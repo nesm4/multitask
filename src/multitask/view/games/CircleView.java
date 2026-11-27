@@ -17,7 +17,11 @@ public final class CircleView implements GameView {
 
   /** État du mini-jeu d'esquive lu pour produire le dessin. */
   private final Circle circler;
-
+  
+  private final Color BACKGROUND_COLOR = new Color(250, 241, 184);
+  private final Color CIRCLE_COLOR = new Color(131, 120, 1);
+  private final Color MISSILES_COLOR = new Color(0, 0, 0);
+  
   /**
    * Crée une vue associée au mini-jeu fourni.
    *
@@ -29,7 +33,11 @@ public final class CircleView implements GameView {
     this.circler = circler;
     super();
   }
-
+  
+  public Color BackgroundColor() {
+  	return BACKGROUND_COLOR;
+  }
+  
   /**
    * Dessine le bord droit de l'aire de jeu, la position du joueur et tous les
    * missiles présents. Les coordonnées du modèle sont mises à l'échelle pour
@@ -50,7 +58,7 @@ public final class CircleView implements GameView {
 		
 		graphics.setStroke(new BasicStroke(10));
 		
-		graphics.setColor(Color.ORANGE);
+		graphics.setColor(CIRCLE_COLOR);
 		graphics.drawOval(centerX - width / 2, centerY - width / 2, width, width);
 		
 		var angleOuverture = circler.angleOuverture();
@@ -58,13 +66,13 @@ public final class CircleView implements GameView {
 		
 		graphics.setStroke(new BasicStroke(15));
 		
-		graphics.setColor(new Color(40, 42, 54));
+		graphics.setColor(BACKGROUND_COLOR);
 		graphics.drawArc(centerX - width / 2, centerY - width / 2, width - 2, width - 2, debutAngle, angleOuverture);
 		graphics.drawArc(centerX - width / 2, centerY - width / 2, width + 2, width + 2, debutAngle, angleOuverture);
 		
 		graphics.setStroke(new BasicStroke(3));
 		
-		graphics.setColor(new Color(230, 90, 90));
+		graphics.setColor(MISSILES_COLOR);
 		for (Circle.Missile m : circler.missiles()) {
 			var angle = Math.toRadians(- m.angle());
 			var avancement = (1 - m.x() / 100);
@@ -91,7 +99,7 @@ public final class CircleView implements GameView {
 			int[] yPoints = { my1, my2, my3 };
 
 			Polygon triangle = new Polygon(xPoints, yPoints, 3);
-			graphics.draw(triangle);
+			graphics.fill(triangle);
 		}
 	}
 }

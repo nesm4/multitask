@@ -1,20 +1,23 @@
 package multitask.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.List;
 import java.util.Objects;
 
 import com.github.forax.zen.ApplicationContext;
 
 import multitask.controller.Button;
+import multitask.controller.Outils;
 import multitask.model.Model;
 
 public class ViewTitle implements View {
 	
 	/** Couleur de fond de la fenêtre. */
-  public static final Color BACKGROUND = new Color(24, 26, 32);
+	public static final Color BACKGROUND = new Color(245, 238, 223);
+	
+	public static final Color TEXT_COLOR = new Color(0, 0, 0);
   
 	/**
 	 * Contexte graphique qui fournit la taille d'écran et réalise le rendu des
@@ -26,7 +29,7 @@ public class ViewTitle implements View {
 	/** Hauteur de l'écran relevée à la construction, en pixels. */
 	private final int height;
 	
-	private List<Button> Buttons;
+	private List<Button> buttons;
 	/**
 	   * Crée la vue et mémorise les dimensions de l'écran courant.
 	   *
@@ -34,8 +37,8 @@ public class ViewTitle implements View {
 	   * @throws NullPointerException si {@code context} ou {@code viewers} est
 	   *                              {@code null}
 	   */
-	  public ViewTitle(ApplicationContext context, List<Button> Buttons) {
-	  	this.Buttons = Buttons;
+	  public ViewTitle(ApplicationContext context, List<Button> buttons) {
+	  	this.buttons = buttons;
 	    this.context = Objects.requireNonNull(context);
 	    var screen = context.getScreenInfo();
 	    width = screen.width();
@@ -65,11 +68,17 @@ public class ViewTitle implements View {
 		graphics.setColor(BACKGROUND);
 		graphics.fillRect(0, 0, width, height);
 		
-		for(var button : Buttons) {
+		for (var button : buttons) {
 			graphics.setColor(button.color());
-			graphics.fill(button.rect());
-			graphics.setColor(Color.BLACK);
-			centerText(graphics, button.title(), button.rect());
+			graphics.fillRoundRect(button.rect().x, button.rect().y, button.rect().width, button.rect().height, 100, 100);
+			
+			graphics.setColor(TEXT_COLOR);
+			graphics.setStroke(new BasicStroke(3));
+			graphics.drawRoundRect(button.rect().x, button.rect().y, button.rect().width, button.rect().height, 100, 100);
+			
+			var milieuButtonX = button.rect().x + button.rect().width / 2;
+			var milieuButtonY = button.rect().y + button.rect().height / 2;
+			Outils.centerText(graphics, button.title(), milieuButtonX, milieuButtonY, 20);
 		}
 	}
 
@@ -81,11 +90,5 @@ public class ViewTitle implements View {
 	 * @param text     texte à afficher
 	 * @param bounds   rectangle dans lequel centrer le texte
 	 */
-	private static void centerText(Graphics2D graphics, String text, Rectangle bounds) {
-		var fm = graphics.getFontMetrics();
-		var x = bounds.x + (bounds.width - fm.stringWidth(text)) / 2;
-		var y = bounds.y + bounds.height / 2;
-		graphics.drawString(text, x, y);
-	}
 
 }

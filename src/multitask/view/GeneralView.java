@@ -2,6 +2,7 @@ package multitask.view;
 
 import com.github.forax.zen.ApplicationContext;
 
+import multitask.controller.Outils;
 import multitask.model.Model;
 import multitask.model.Slot;
 
@@ -19,7 +20,12 @@ import java.util.Objects;
 public final class GeneralView implements View {
 
   /** Couleur de fond de la fenêtre. */
-  public static final Color BACKGROUND = new Color(24, 26, 32);
+  public static final Color BACKGROUND = new Color(245, 238, 223);
+  
+  public static final Color SCORE_COLOR = Color.BLACK;
+  
+  public static final Color TEXT_COLOR = Color.GRAY;
+  
   /** Hauteur réservée à la zone supérieure de l'interface, en pixels. */
   private static final int HUD_HEIGHT = 50;
   /** Espacement utilisé entre les zones dessinées, en pixels. */
@@ -113,7 +119,7 @@ public final class GeneralView implements View {
     graphics.setColor(Color.WHITE);
     graphics.setFont(graphics.getFont().deriveFont(Font.BOLD, 18f));
     String text = String.format("Temps : " + model.time() + " s");
-    graphics.drawString(text, PADDING + MARGIN, 30 + MARGIN);
+    Outils.centerText(graphics, text, PADDING + MARGIN, 30 + MARGIN, 20);
   }
 
   /**
@@ -127,14 +133,16 @@ public final class GeneralView implements View {
    * @param bounds   rectangle de la cellule à dessiner
    */
   private void drawSlot(Graphics2D graphics, Slot slot, Model model, Rectangle bounds) {
-    graphics.setColor(new Color(40, 42, 54));
+    graphics.setColor(viewers.view(slot.game()).BackgroundColor());
     graphics.fillRoundRect(bounds.x, bounds.y, bounds.width, bounds.height, 12, 12);
 
     if (!slot.active()) {
       var remaining = Math.max(0, slot.activationTime() - model.time());
       graphics.setColor(Color.GRAY);
       graphics.setFont(graphics.getFont().deriveFont(Font.PLAIN, 14f));
-      centerText(graphics, "Dans " + remaining + " s...", bounds);
+      var milieuBoundsX = bounds.x + bounds.width/2;
+      var milieuBoundsY = bounds.y + bounds.height/2;
+      Outils.centerText(graphics, "Dans " + remaining + " s...", milieuBoundsX, milieuBoundsY, 20);
       return;
     }
 
@@ -145,19 +153,5 @@ public final class GeneralView implements View {
     var inner = new Rectangle(bounds.x + 10, bounds.y + 26, bounds.width - 20, bounds.height - 52);
     viewers.view(slot.game()).render(graphics, inner);
   }
-
-  /**
-   * Dessine un texte horizontalement centré dans un rectangle, à mi-hauteur de
-   * celui-ci.
-   *
-   * @param graphics surface graphique utilisée pour le dessin
-   * @param text     texte à afficher
-   * @param bounds   rectangle dans lequel centrer le texte
-   */
-  private static void centerText(Graphics2D graphics, String text, Rectangle bounds) {
-    var fm = graphics.getFontMetrics();
-    var x = bounds.x + (bounds.width - fm.stringWidth(text)) / 2;
-    var y = bounds.y + bounds.height / 2;
-    graphics.drawString(text, x, y);
-  }
+  
 }

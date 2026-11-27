@@ -31,27 +31,31 @@ public final class Touch implements Game {
   
   private static final double TEMPS_ZONE = 10.0;
   
-  private static final int WIDTH = 200;
+  private static final int WIDTH = 100;
   private static final int HEIGHT = 100;
   private static final double SPEEDX = WIDTH/100.0;
   private static final double SPEEDY = HEIGHT/100.0;
-  private static final int RAYON_ZONE = 5;
+  private static final int RAYON_ZONE = 10;
   private static final int RAYON_PLAYER = 3;
   
-  
-  public record Cercle(int x, int y, double rayon) {
-  	
-  	private boolean isInside(int x, int y) {
-  		return (Math.sqrt((this.x - x)*(this.x - x) + (this.y - y)*(this.y - y)) <= rayon);
-  	}
-  	
-		private boolean Intersects(Cercle c2) {
-			int milieuX = (c2.x + x) / 2;
-			int milieuY = (c2.y + y) / 2;
-			return isInside(milieuX, milieuY);
+	public record Cercle(int x, int y, double rayon) {
+
+		public Cercle {
+			if (rayon < 0 || Double.isNaN(rayon)) {
+				throw new IllegalArgumentException("Le rayon doit être positif ou nul.");
+			}
 		}
-  }
-  
+
+		public boolean isInside(int px, int py) {
+			return Math.hypot((double) this.x - px, (double) this.y - py) <= this.rayon;
+		}
+
+		public boolean Intersects(Cercle c2) {
+			return Math.hypot((double) this.x - c2.x, (double) this.y - c2.y) <= this.rayon + c2.rayon;
+		}
+
+	}
+
   /**
    * Missile se déplaçant horizontalement sur une rangée fixe.
    *
@@ -185,7 +189,7 @@ public final class Touch implements Game {
     Random random = new Random();
     if (spawnTimer < 0) {
       zones.add(new Zone(
-      		new Cercle(random.nextInt(WIDTH), random.nextInt(HEIGHT), RAYON_ZONE), 
+      		new Cercle(RAYON_ZONE + random.nextInt(WIDTH - RAYON_ZONE), RAYON_ZONE + random.nextInt(HEIGHT - RAYON_ZONE), RAYON_ZONE), 
       		TEMPS_ZONE));
       spawnTimer = spawnInterval;
     }
