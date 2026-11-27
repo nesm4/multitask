@@ -143,9 +143,9 @@ public class TitleScreen {
 		var model = new Model();
 		var viewers = new Viewers();
 		addGame(model, viewers, new Balance(), 0, BalanceView::new);
-		addGame(model, viewers, new Avoid(), 40, AvoidView::new);
-		addGame(model, viewers, new Circle(), 40, CircleView::new);
-		addGame(model, viewers, new Touch(), 40, TouchView::new);
+		addGame(model, viewers, new Avoid(), 10, AvoidView::new);
+		addGame(model, viewers, new Circle(), 20, CircleView::new);
+		addGame(model, viewers, new Touch(), 30, TouchView::new);
 
 		var view = new GeneralView(context, viewers);
 		return new Controller(model, view, context);

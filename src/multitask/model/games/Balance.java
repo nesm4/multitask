@@ -24,7 +24,7 @@ public final class Balance implements Game {
   /** Valeur absolue maximale de l'inclinaison de la planche, en degrés. */
   public static final double MAX_TILT_DEGREES = 45;
   /** Valeur absolue maximale de l'accélération de la bille, en unités par seconde au carré. */
-  private static final double MAX_ACCELERATION = 15;
+  private static final double MAX_ACCELERATION = 35;
   /** Vitesse de variation de l'inclinaison commandée par le joueur, en degrés par seconde. */
   private static final double TILT_SPEED_DEG_PER_SEC = 75;
   /**

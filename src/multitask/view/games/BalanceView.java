@@ -13,11 +13,6 @@ import multitask.model.games.Balance;
  */
 public final class BalanceView implements GameView {
 
-  /** Hauteur de la planche, en pixels. */
-  private static final int PLANK_HEIGHT = 14;
-  /** Diamètre de la bille, en pixels. */
-  private static final int BALL_DIAMETER = 24;
-
   /** État de jeu lu pour produire le dessin. */
   private final Balance balance;
   
@@ -56,10 +51,12 @@ public final class BalanceView implements GameView {
 
     var centerX = area.x + area.width / 2;
     var centerY = area.y + area.height / 2 + 30;
-    var plankWidth = (int) (area.width * 0.55);
+    var plankWidth = (int) (Math.min(area.width, area.height) * 0.55);
+    var plankHeight = (int) (Math.min(area.width, area.height) * 0.018);
+    var ball_diameter = (int) (Math.min(area.width, area.height) * 0.05);
 
-    drawPlank(graphics, centerX, centerY, plankWidth);
-    drawBall(graphics, centerX, centerY, plankWidth);
+    drawPlank(graphics, centerX, centerY, plankWidth, plankHeight);
+    drawBall(graphics, centerX, centerY, plankWidth, plankHeight, ball_diameter);
   }
 
   /**
@@ -72,11 +69,11 @@ public final class BalanceView implements GameView {
    * @param centerY    ordonnée du centre de la planche
    * @param plankWidth longueur de la planche, en pixels
    */
-  private void drawPlank(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
+  private void drawPlank(Graphics2D graphics, int centerX, int centerY, int plankWidth, int plankHeight) {
     var oldTransform = graphics.getTransform();
     graphics.rotate(Math.toRadians(balance.tilt()), centerX, centerY);
     graphics.setColor(PLANK_COLOR);
-    graphics.fillRect(centerX - plankWidth / 2, centerY - PLANK_HEIGHT / 2, plankWidth, PLANK_HEIGHT);
+    graphics.fillRect(centerX - plankWidth / 2, centerY - plankHeight / 2, plankWidth, plankHeight);
     graphics.setTransform(oldTransform);
   }
 
@@ -90,17 +87,17 @@ public final class BalanceView implements GameView {
    * @param centerY    ordonnée du centre de la planche
    * @param plankWidth longueur de la planche, en pixels
    */
-  private void drawBall(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
+  private void drawBall(Graphics2D graphics, int centerX, int centerY, int plankWidth, int plankHeight, int ballDiam) {
     var pixelsPerUnit = (plankWidth / 2.0) / Balance.TRACK_HALF_LENGTH;
     var along = balance.position() * pixelsPerUnit;
-    var above = PLANK_HEIGHT / 2.0 + BALL_DIAMETER / 2.0;
+    var above = plankHeight / 2.0 + ballDiam / 2.0;
     var tiltRad = Math.toRadians(balance.tilt());
 
     var x = centerX + along * Math.cos(tiltRad) + above * Math.sin(tiltRad);
-    var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad);
+    var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad) + 1;
 
     graphics.setColor(BALL_COLOR);
-    graphics.fillOval((int) (x - BALL_DIAMETER / 2.0), (int) (y - BALL_DIAMETER / 2.0), BALL_DIAMETER,
-        BALL_DIAMETER);
+    graphics.fillOval((int) (x - ballDiam / 2.0), (int) (y - ballDiam / 2.0), ballDiam,
+    		ballDiam);
   }
 }
