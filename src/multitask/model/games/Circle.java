@@ -28,12 +28,12 @@ public final class Circle implements Game {
   public static final int MAX_ANGLE = 360;
   public static final int ANGLE_OUVERTURE = 45;
   /** Vitesse de déplacement initiale d'un missile, en unités par seconde. */
-  private static final double BASE_MISSILE_SPEED = 5;
+  private static final double BASE_MISSILE_SPEED = 10;
   private static final double MAX_MISSILE_SPEED = 15;
   private static final double MISSILE_MOVE_POWER = 5;
   /** Intervalle initial entre deux apparitions de missiles, en secondes. */
-  private static final double BASE_SPAWN_INTERVAL = 3.0;
-  private static final double MIN_SPAWN_INTERVAL = 1.0;
+  private static final double BASE_SPAWN_INTERVAL = 4.0;
+  private static final double MIN_SPAWN_INTERVAL = 2.0;
 
   /**
    * Missile se déplaçant horizontalement sur une rangée fixe.
@@ -121,7 +121,7 @@ public final class Circle implements Game {
    * @param difficulty niveau de difficulté global
    */
   private void spawnMissiles(double dt, double difficulty) {
-    var spawnInterval = Math.max(1.5, BASE_SPAWN_INTERVAL - difficulty * 0.15);
+    var spawnInterval = Math.max(MIN_SPAWN_INTERVAL, BASE_SPAWN_INTERVAL - difficulty * 0.05);
     spawnTimer -= dt;
     if (spawnTimer < 0) {
       missiles.add(new Missile(0.0, random.nextInt(360)));
@@ -137,7 +137,7 @@ public final class Circle implements Game {
    * @param difficulty niveau de difficulté global
    */
   private void moveMissiles(double dt, double difficulty) {
-    var missileSpeed = BASE_MISSILE_SPEED + difficulty * 10;
+    var missileSpeed = Math.min(MAX_MISSILE_SPEED, BASE_MISSILE_SPEED + difficulty * 10);
     missiles.replaceAll(m -> m.move(dt * missileSpeed));
   }
 

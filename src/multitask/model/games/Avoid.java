@@ -28,11 +28,11 @@ public final class Avoid implements Game {
   public static final int ROWS = 5;
 
   /** Vitesse de déplacement initiale d'un missile, en unités par seconde. */
-  private static final double BASE_MISSILE_SPEED = 32;
-  private static final double MAX_MISSILE_SPEED = 50;
+  private static final double BASE_MISSILE_SPEED = 20;
+  private static final double MAX_MISSILE_SPEED = 40;
   /** Intervalle initial entre deux apparitions de missiles, en secondes. */
-  private static final double BASE_SPAWN_INTERVAL = 2.0;
-  private static final double MIN_SPAWN_INTERVAL = 0.7;
+  private static final double BASE_SPAWN_INTERVAL = 3.0;
+  private static final double MIN_SPAWN_INTERVAL = 1.0;
 
   /**
    * Missile se déplaçant horizontalement sur une rangée fixe.
@@ -126,7 +126,7 @@ public final class Avoid implements Game {
    * @param difficulty niveau de difficulté global
    */
   private void spawnMissiles(double dt, double difficulty) {
-    var spawnInterval = Math.max(MIN_SPAWN_INTERVAL, BASE_SPAWN_INTERVAL - difficulty * 0.15);
+    var spawnInterval = Math.max(MIN_SPAWN_INTERVAL, BASE_SPAWN_INTERVAL - difficulty * 0.10);
     spawnTimer -= dt;
     if (spawnTimer < 0) {
       missiles.add(new Missile(0.0, random.nextInt(ROWS), RandomSens()));
@@ -142,7 +142,7 @@ public final class Avoid implements Game {
    * @param difficulty niveau de difficulté global
    */
   private void moveMissiles(double dt, double difficulty) {
-    var missileSpeed = Math.min(MAX_MISSILE_SPEED, BASE_MISSILE_SPEED + difficulty * 2);
+    var missileSpeed = Math.min(MAX_MISSILE_SPEED, BASE_MISSILE_SPEED + difficulty * 1);
     missiles.replaceAll(m -> m.moveRight(dt * missileSpeed));
   }
 
