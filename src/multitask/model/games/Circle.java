@@ -30,6 +30,7 @@ public final class Circle implements Game {
   /** Vitesse de déplacement initiale d'un missile, en unités par seconde. */
   private static final double BASE_MISSILE_SPEED = 5;
   private static final double MAX_MISSILE_SPEED = 15;
+  private static final double MISSILE_MOVE_POWER = 5;
   /** Intervalle initial entre deux apparitions de missiles, en secondes. */
   private static final double BASE_SPAWN_INTERVAL = 3.0;
   private static final double MIN_SPAWN_INTERVAL = 1.0;
@@ -148,7 +149,7 @@ public final class Circle implements Game {
    * @return {@code false} si un missile a atteint le joueur ; {@code true} sinon
    */
   private boolean checkBorder() {
-    if (missiles.stream().anyMatch(m -> Math.pow(m.x/WIDTH, 3) >= 0.8 && Math.pow(m.x/WIDTH, 3) <= 0.81 && !AngleValide(m.angle()) )) {
+    if (missiles.stream().anyMatch(m -> Math.pow(m.x/WIDTH, MISSILE_MOVE_POWER) >= 0.8 && Math.pow(m.x/WIDTH, MISSILE_MOVE_POWER) <= 0.83 && !AngleValide(m.angle()) )) {
       return false;
     }
     missiles.removeIf(m -> m.x >= WIDTH);
@@ -174,7 +175,14 @@ public final class Circle implements Game {
   public int angleOuverture() {
     return ANGLE_OUVERTURE;
   }
-
+  
+  public double width() {
+    return WIDTH;
+  }
+  
+  public double MovePower() {
+  		return MISSILE_MOVE_POWER;
+  }
   /**
    * Retourne les missiles actuellement présents.
    *
