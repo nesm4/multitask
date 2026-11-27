@@ -9,7 +9,7 @@ import multitask.model.games.Balance;
 
 /**
  * Vue graphique du mini-jeu {@link Balance} : dessine la planche inclinée et la
- * bille, y compris lorsque celle-ci tombe.
+ * bille.
  */
 public final class BalanceView implements GameView {
 
@@ -80,16 +80,7 @@ public final class BalanceView implements GameView {
     graphics.setTransform(oldTransform);
   }
 
-  /**
-   * Dessine la bille. Sa position le long de la planche est projetée sur
-   * l'écran grâce à l'inclinaison, puis sa hauteur de chute est ajoutée
-   * verticalement à l'écran, quelle que soit l'inclinaison de la planche.
-   *
-   * @param graphics   contexte graphique à utiliser
-   * @param centerX    abscisse du centre de la planche
-   * @param centerY    ordonnée du centre de la planche
-   * @param plankWidth longueur de la planche, en pixels
-   */
+  
   /**
    * Dessine la bille. Sa position le long de la planche est projetée sur
    * l'écran grâce à l'inclinaison, de sorte qu'elle reste posée sur la planche.
