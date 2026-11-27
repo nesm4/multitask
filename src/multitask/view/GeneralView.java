@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
@@ -87,7 +88,7 @@ public final class GeneralView implements View {
     graphics.fillRect(0, 0, width, height);
     drawScore(graphics, model);
 
-    var slots = model.slots();
+    var slots = model.slots().stream().filter(s -> s.active()).sorted(Comparator.comparing(Slot::activationTime)).toList();
     var n = slots.size();
     if (n > 0) {
       var cols = (int) Math.ceil(Math.sqrt(n));
