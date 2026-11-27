@@ -90,6 +90,15 @@ public final class BalanceView implements GameView {
    * @param centerY    ordonnée du centre de la planche
    * @param plankWidth longueur de la planche, en pixels
    */
+  /**
+   * Dessine la bille. Sa position le long de la planche est projetée sur
+   * l'écran grâce à l'inclinaison, de sorte qu'elle reste posée sur la planche.
+   *
+   * @param graphics   contexte graphique à utiliser
+   * @param centerX    abscisse du centre de la planche
+   * @param centerY    ordonnée du centre de la planche
+   * @param plankWidth longueur de la planche, en pixels
+   */
   private void drawBall(Graphics2D graphics, int centerX, int centerY, int plankWidth) {
     var pixelsPerUnit = (plankWidth / 2.0) / Balance.TRACK_HALF_LENGTH;
     var along = balance.position() * pixelsPerUnit;
@@ -97,8 +106,7 @@ public final class BalanceView implements GameView {
     var tiltRad = Math.toRadians(balance.tilt());
 
     var x = centerX + along * Math.cos(tiltRad) + above * Math.sin(tiltRad);
-    var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad)
-        + balance.drop() * pixelsPerUnit;
+    var y = centerY + along * Math.sin(tiltRad) - above * Math.cos(tiltRad);
 
     graphics.setColor(BALL_COLOR);
     graphics.fillOval((int) (x - BALL_DIAMETER / 2.0), (int) (y - BALL_DIAMETER / 2.0), BALL_DIAMETER,
