@@ -75,7 +75,7 @@ public final class CircleView implements GameView {
 		graphics.setColor(MISSILES_COLOR);
 		for (Circle.Missile m : circler.missiles()) {
 			var angle = Math.toRadians(- m.angle());
-			var avancement = (1 - m.x() / 100);
+			var avancement = (1 - Math.pow(m.x()/100, 3));
 			var coteTriangle = 10.0;
 			var baseHalf = coteTriangle/2;
 			var hauteur = Math.sqrt(coteTriangle * coteTriangle - baseHalf * baseHalf);
